@@ -13,7 +13,7 @@ module Dependabot
         def subproject_paths
           subprojects = []
 
-          comment_free_content.scan(function_regex("include")) do
+          comment_free_content.scan(function_regex("include(?:Build)?")) do
             args = Regexp.last_match.named_captures.fetch("args")
             args = args.split(",")
             args = args.map { |p| p.gsub(/["']/, "").strip }.compact

@@ -26,6 +26,14 @@ RSpec.describe Dependabot::Gradle::FileFetcher::SettingsFileParser do
       end
     end
 
+    context "when there are subproject and included build declarations" do
+      let(:fixture_name) { "composite_build_simple_settings.gradle" }
+
+      it "includes the additional declarations" do
+        expect(subproject_paths).to match_array(%w(app included))
+      end
+    end
+
     context "with various call styles" do
       let(:fixture_name) { "call_style_settings.gradle" }
 
@@ -46,7 +54,7 @@ RSpec.describe Dependabot::Gradle::FileFetcher::SettingsFileParser do
       let(:fixture_name) { "settings.gradle.kts" }
 
       it "includes the additional declarations" do
-        expect(subproject_paths).to match_array(%w(app))
+        expect(subproject_paths).to match_array(%w(app settings-plugins project-plugins))
       end
     end
 
@@ -73,6 +81,15 @@ RSpec.describe Dependabot::Gradle::FileFetcher::SettingsFileParser do
           expect(subproject_paths).
             to match_array(%w(../ganttproject ../biz.ganttproject.core))
         end
+      end
+    end
+
+    context "with multiple included builds" do
+      let(:fixture_name) { "composite_build_settings.gradle" }
+
+      it "includes the additional declarations" do
+        expect(subproject_paths).
+          to match_array(%w(lint-plugins settings-plugins publishing))
       end
     end
 
