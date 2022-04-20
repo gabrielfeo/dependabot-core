@@ -80,6 +80,21 @@ RSpec.describe Dependabot::Gradle::FileFetcher do
       end
     end
 
+    context "with included builds" do
+      before do
+        # TODO
+        stub_content_request("?ref=sha", "contents_java_with_settings.json")
+        stub_content_request("settings.gradle?ref=sha", "contents_java_simple_settings.json")
+        stub_content_request("app/build.gradle?ref=sha", "contents_java_basic_buildfile.json")
+      end
+
+      it "fetches main buildfile and subproject buildfile of included build" do
+        expect(file_fetcher_instance.files.count).to eq(5)
+        expect(file_fetcher_instance.files.map(&:name)).
+          to match_array(%w(build.gradle settings.gradle included/build.gradle included/settings.gradle included/subproj/build.gradle))
+      end
+    end
+
     context "only a settings.gradle" do
       before do
         stub_content_request("?ref=sha", "contents_java_only_settings.json")
