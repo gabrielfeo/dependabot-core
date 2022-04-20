@@ -10,10 +10,18 @@ module Dependabot
           @settings_file = settings_file
         end
 
+        def included_build_paths
+          paths = []
+          comment_free_content.scan(function_regex("includeBuild")) do
+            paths += Regexp.last_match.named_captures.fetch("args")
+          end
+          paths.uniq
+        end
+
         def subproject_paths
           subprojects = []
 
-          comment_free_content.scan(function_regex("include(?:Build)?")) do
+          comment_free_content.scan(function_regex("include")) do
             args = Regexp.last_match.named_captures.fetch("args")
             args = args.split(",")
             args = args.map { |p| p.gsub(/["']/, "").strip }.compact
