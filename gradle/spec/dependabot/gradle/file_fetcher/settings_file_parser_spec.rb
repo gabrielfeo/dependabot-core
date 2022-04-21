@@ -84,7 +84,13 @@ RSpec.describe Dependabot::Gradle::FileFetcher::SettingsFileParser do
   describe "#included_build_paths" do
     subject(:included_build_paths) { finder.included_build_paths }
 
-    # TODO context "when there are no included build declarations" do
+    context "when there are no included build declarations" do
+      let(:fixture_name) { "simple_settings.gradle" }
+
+      it "includes no declaration" do
+        expect(included_build_paths).to match_array([])
+      end
+    end
 
     context "with single included build" do
       let(:fixture_name) { "composite_build_simple_settings.gradle" }
@@ -98,13 +104,31 @@ RSpec.describe Dependabot::Gradle::FileFetcher::SettingsFileParser do
       let(:fixture_name) { "composite_build_settings.gradle" }
 
       it "includes the additional declarations" do
-        expect(included_build_paths).
-          to match_array(%w(./plugins/lint-plugins ./plugins/settings-plugins ./publishing))
+        expect(included_build_paths).to match_array(
+          %w(./plugins/lint-plugins ./plugins/settings-plugins ./publishing)
+        )
+      end
+    end
+
+    context "with various call styles" do
+      let(:fixture_name) { "call_style_settings.gradle" }
+
+      it "includes all declarations" do
+        expect(included_build_paths).to match_array(
+          %w(without_space with_space implicit implicit_with_many_spaces ./standard-path)
+        )
+      end
+    end
+
+    context "with commented out included build declarations" do
+      let(:fixture_name) { "comment_settings.gradle" }
+
+      it "includes only uncommented declarations" do
+        expect(included_build_paths).to match_array(%w(./included))
       end
     end
 
     # TODO context "with commented out included build declarations"
-    # TODO context "with multiple call styles"
 
     context "when kotlin" do
       let(:settings_file_name) { "settings.gradle.kts" }
