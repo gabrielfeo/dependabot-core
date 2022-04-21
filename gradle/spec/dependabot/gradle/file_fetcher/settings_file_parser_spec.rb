@@ -6,13 +6,13 @@ require "dependabot/gradle/file_fetcher/settings_file_parser"
 
 RSpec.describe Dependabot::Gradle::FileFetcher::SettingsFileParser do
   let(:finder) { described_class.new(settings_file: settings_file) }
-
   let(:settings_file) do
     Dependabot::DependencyFile.new(
-      name: "settings.gradle",
+      name: settings_file_name,
       content: fixture("settings_files", fixture_name)
-    )
-  end
+      )
+    end
+  let(:settings_file_name) { "settings.gradle" }
   let(:fixture_name) { "simple_settings.gradle" }
 
   describe "#subproject_paths" do
@@ -23,15 +23,6 @@ RSpec.describe Dependabot::Gradle::FileFetcher::SettingsFileParser do
 
       it "includes the additional declarations" do
         expect(subproject_paths).to match_array(%w(app))
-      end
-    end
-
-    context "when there are subproject and included build declarations" do
-      let(:fixture_name) { "composite_build_simple_settings.gradle" }
-
-      it "includes the additional declarations" do
-        expect(subproject_paths).to match_array(%w(app))
-        expect(included_build_paths).to match_array(%w(included))
       end
     end
 
@@ -46,17 +37,11 @@ RSpec.describe Dependabot::Gradle::FileFetcher::SettingsFileParser do
     end
 
     context "when kotlin" do
-      let(:settings_file) do
-        Dependabot::DependencyFile.new(
-          name: "settings.gradle.kts",
-          content: fixture("settings_files", fixture_name)
-        )
-      end
+      let(:settings_file_name) { "settings.gradle.kts" }
       let(:fixture_name) { "settings.gradle.kts" }
 
       it "includes the additional declarations" do
         expect(subproject_paths).to match_array(%w(app))
-        expect(included_build_paths).to match_array(%w(settings-plugins project-plugins))
       end
     end
 
@@ -86,6 +71,29 @@ RSpec.describe Dependabot::Gradle::FileFetcher::SettingsFileParser do
       end
     end
 
+    context "with custom paths specified" do
+      let(:fixture_name) { "custom_dir_settings.gradle" }
+
+      it "uses the custom declarations" do
+        expect(subproject_paths).
+          to match_array(%w(subprojects/chrome-trace examples/java))
+      end
+    end
+  end
+
+  describe "#included_build_paths" do
+    subject(:included_build_paths) { finder.included_build_paths }
+
+    # TODO context "when there are no included build declarations" do
+
+    context "with single included build" do
+      let(:fixture_name) { "composite_build_simple_settings.gradle" }
+
+      it "includes the declaration" do
+        expect(included_build_paths).to match_array(%w(included))
+      end
+    end
+
     context "with multiple included builds" do
       let(:fixture_name) { "composite_build_settings.gradle" }
 
@@ -95,12 +103,15 @@ RSpec.describe Dependabot::Gradle::FileFetcher::SettingsFileParser do
       end
     end
 
-    context "with custom paths specified" do
-      let(:fixture_name) { "custom_dir_settings.gradle" }
+    # TODO context "with commented out included build declarations"
+    # TODO context "with multiple call styles"
 
-      it "uses the custom declarations" do
-        expect(subproject_paths).
-          to match_array(%w(subprojects/chrome-trace examples/java))
+    context "when kotlin" do
+      let(:settings_file_name) { "settings.gradle.kts" }
+      let(:fixture_name) { "settings.gradle.kts" }
+
+      it "includes the additional declarations" do
+        expect(included_build_paths).to match_array(%w(settings-plugins project-plugins))
       end
     end
   end
