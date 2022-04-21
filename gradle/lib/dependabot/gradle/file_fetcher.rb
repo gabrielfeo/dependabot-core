@@ -36,14 +36,7 @@ module Dependabot
         fetched_files
       end
 
-      def buildfile
-        @buildfile ||= begin
-          file = supported_build_file
-          @buildfile_name ||= file.name if file
-          file
-        end
-      end
-
+      # TODO Rename all_buildfiles
       def subproject_buildfiles
         return [] unless settings_file
 
@@ -57,7 +50,7 @@ module Dependabot
             if @buildfile_name
               fetch_file_from_host(File.join(path, @buildfile_name))
             else
-              supported_file(SUPPORTED_BUILD_FILE_NAMES.map { |f| File.join(path, f) })
+              buildfile(path)
             end
           rescue Dependabot::DependencyFileNotFound
             # Gradle itself doesn't worry about missing subprojects, so we don't
@@ -104,24 +97,36 @@ module Dependabot
         false
       end
 
-      def settings_file
-        @settings_file ||= supported_settings_file
+      def buildfile(dir = ".")
+        file = first_present_file(dir, SUPPORTED_BUILD_FILE_NAMES)
+        @buildfile_name = file.name if file
+        file
       end
 
-      def supported_build_file
-        supported_file(SUPPORTED_BUILD_FILE_NAMES)
+      def settings_file(dir = ".")
+        first_present_file(dir, SUPPORTED_SETTINGS_FILE_NAMES)
       end
 
-      def supported_settings_file
-        supported_file(SUPPORTED_SETTINGS_FILE_NAMES)
-      end
-
-      def supported_file(supported_file_names)
-        supported_file_names.each do |supported_file_name|
-          file = fetch_file_if_present(supported_file_name)
-          return file if file
+      def first_present_file(dir, supported_names)
+        paths = supported_names.map { |name| File.join(dir, name) }
+        paths.each do |path|
+          return cache[path] if cache.include? path
         end
+        fetch_first_present_file(paths)
+      end
 
+      def cache
+        @cached_files ||= Hash.new
+      end
+
+      def fetch_first_present_file(paths)
+        paths.each do |path|
+          file = fetch_file_if_present(path)
+          if file
+            cache[path] = file
+            return file
+          end
+        end
         nil
       end
     end
