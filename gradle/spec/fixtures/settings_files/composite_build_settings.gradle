@@ -2,5 +2,5 @@ pluginManagement {
   includeBuild './plugins/settings-plugins'
 }
 
-includeBuild "./plugins/lint-plugins"
-includeBuild 'publishing'
+includeBuild './plugins/lint-plugins'
+includeBuild './publishing'

@@ -13,7 +13,8 @@ module Dependabot
         def included_build_paths
           paths = []
           comment_free_content.scan(function_regex("includeBuild")) do
-            paths += Regexp.last_match.named_captures.fetch("args")
+            arg = Regexp.last_match.named_captures.fetch("args")
+            paths << arg.gsub(/["']/, "").strip
           end
           paths.uniq
         end
