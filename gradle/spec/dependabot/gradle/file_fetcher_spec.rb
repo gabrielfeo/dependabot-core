@@ -90,7 +90,7 @@ RSpec.describe Dependabot::Gradle::FileFetcher do
           stub_content_request("included/app/build.gradle?ref=sha", "contents_java_basic_buildfile.json")
         end
   
-        it "fetches all buildfiles of main and included build" do
+        it "fetches all buildfiles" do
           expect(file_fetcher_instance.files.count).to eq(5)
           expect(file_fetcher_instance.files.map(&:name)).
             to match_array(%w(
@@ -115,7 +115,7 @@ RSpec.describe Dependabot::Gradle::FileFetcher do
           stub_content_request("included/nested/app/build.gradle?ref=sha", "contents_java_basic_buildfile.json")
         end
   
-        it "fetches all buildfiles of main and included builds transitively" do
+        it "fetches all buildfiles transitively" do
           expect(file_fetcher_instance.files.count).to eq(5)
           expect(file_fetcher_instance.files.map(&:name)).
             to match_array(%w(
