@@ -27,23 +27,22 @@ module Dependabot
       private
 
       def fetch_files
-        fetched_files = []
-        fetched_files << buildfile if buildfile
-        fetched_files << settings_file if settings_file
-        fetched_files += subproject_buildfiles
-        fetched_files += dependency_script_plugins
-        check_required_files_present
+        dir = "."
+        fetched_files = [buildfile(dir), settings_file(dir)].compact
+        fetched_files += subproject_buildfiles(dir)
+        fetched_files += dependency_script_plugins(dir)
+        check_required_files_present(fetched_files)
         fetched_files
       end
 
       # TODO Rename all_buildfiles
-      def subproject_buildfiles
-        return [] unless settings_file
+      def subproject_buildfiles(root_project_dir)
+        return [] unless settings_file(root_project_dir)
 
         @subproject_buildfiles ||= begin
           subproject_paths =
             SettingsFileParser.
-            new(settings_file: settings_file).
+            new(settings_file: settings_file(root_project_dir)).
             subproject_paths
 
           subproject_paths.map do |path|
@@ -60,11 +59,11 @@ module Dependabot
       end
 
       # rubocop:disable Metrics/PerceivedComplexity
-      def dependency_script_plugins
-        return [] unless buildfile
+      def dependency_script_plugins(root_project_dir)
+        return [] unless buildfile(root_project_dir)
 
         dependency_plugin_paths =
-          FileParser.find_include_names(buildfile).
+          FileParser.find_include_names(buildfile(root_project_dir)).
           reject { |path| path.include?("://") }.
           reject { |path| !path.include?("/") && path.split(".").count > 2 }.
           select { |filename| filename.include?("dependencies") }.
@@ -82,8 +81,8 @@ module Dependabot
       end
       # rubocop:enable Metrics/PerceivedComplexity
 
-      def check_required_files_present
-        return if buildfile || (subproject_buildfiles && !subproject_buildfiles.empty?)
+      def check_required_files_present(files)
+        return if files.any?
 
         path = Pathname.new(File.join(directory, "build.gradle")).cleanpath.to_path
         path += "(.kts)?"
@@ -97,13 +96,13 @@ module Dependabot
         false
       end
 
-      def buildfile(dir = ".")
+      def buildfile(dir)
         file = first_present_file(dir, SUPPORTED_BUILD_FILE_NAMES)
         @buildfile_name = file.name if file
         file
       end
 
-      def settings_file(dir = ".")
+      def settings_file(dir)
         first_present_file(dir, SUPPORTED_SETTINGS_FILE_NAMES)
       end
 
