@@ -27,12 +27,33 @@ module Dependabot
       private
 
       def fetch_files
-        dir = "."
-        fetched_files = [buildfile(dir), settings_file(dir)].compact
-        fetched_files += subproject_buildfiles(dir)
-        fetched_files += dependency_script_plugins(dir)
+        fetched_files = all_buildfiles_in_build(".")
         check_required_files_present(fetched_files)
         fetched_files
+      end
+
+      def all_buildfiles_in_build(root_dir)
+        files = [buildfile(root_dir), settings_file(root_dir)].compact
+        files += subproject_buildfiles(root_dir)
+        files += dependency_script_plugins(root_dir)
+        included_builds(root_dir).each do |dir|
+          files += all_buildfiles_in_build(dir)
+        end
+        files
+      end
+
+      def included_builds(root_dir)
+        return [] unless settings_file(root_dir)
+
+        direct_includes =
+          SettingsFileParser.
+          new(settings_file: settings_file(root_dir)).
+          included_build_paths
+
+        nested_includes = direct_includes.flat_map do |dir|
+          included_builds(dir)
+        end
+        direct_includes + nested_includes
       end
 
       # TODO Rename all_buildfiles
