@@ -27,6 +27,7 @@ module Dependabot
       private
 
       def fetch_files
+        # byebug
         fetched_files = all_buildfiles_in_build(".")
         check_required_files_present(fetched_files)
         fetched_files
@@ -51,7 +52,7 @@ module Dependabot
           included_build_paths
 
         nested_includes = direct_includes.flat_map do |dir|
-          included_builds(dir)
+          included_builds(File.join(root_dir, dir))
         end
         direct_includes + nested_includes
       end
@@ -60,23 +61,21 @@ module Dependabot
       def subproject_buildfiles(root_dir)
         return [] unless settings_file(root_dir)
 
-        @subproject_buildfiles ||= begin
-          subproject_paths =
-            SettingsFileParser.
-            new(settings_file: settings_file(root_dir)).
-            subproject_paths
+        subproject_paths =
+          SettingsFileParser.
+          new(settings_file: settings_file(root_dir)).
+          subproject_paths
 
-          subproject_paths.map do |path|
-            if @buildfile_name
-              fetch_file_from_host(File.join(path, @buildfile_name))
-            else
-              buildfile(path)
-            end
-          rescue Dependabot::DependencyFileNotFound
-            # Gradle itself doesn't worry about missing subprojects, so we don't
-            nil
-          end.compact
-        end
+        f = subproject_paths.map do |path|
+          if @buildfile_name
+            fetch_file_from_host(File.join(root_dir, path, @buildfile_name))
+          else
+            buildfile(File.join(root_dir, path))
+          end
+        rescue Dependabot::DependencyFileNotFound
+          # Gradle itself doesn't worry about missing subprojects, so we don't
+          nil
+        end.compact
       end
 
       # rubocop:disable Metrics/PerceivedComplexity
@@ -119,7 +118,7 @@ module Dependabot
 
       def buildfile(dir)
         file = first_present_file(dir, SUPPORTED_BUILD_FILE_NAMES)
-        @buildfile_name = file.name if file
+        @buildfile_name ||= File.basename(file.name)
         file
       end
 
