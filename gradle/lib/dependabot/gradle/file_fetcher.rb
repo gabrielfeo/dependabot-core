@@ -36,13 +36,13 @@ module Dependabot
       end
 
       # TODO Rename all_buildfiles
-      def subproject_buildfiles(root_project_dir)
-        return [] unless settings_file(root_project_dir)
+      def subproject_buildfiles(root_dir)
+        return [] unless settings_file(root_dir)
 
         @subproject_buildfiles ||= begin
           subproject_paths =
             SettingsFileParser.
-            new(settings_file: settings_file(root_project_dir)).
+            new(settings_file: settings_file(root_dir)).
             subproject_paths
 
           subproject_paths.map do |path|
@@ -59,11 +59,11 @@ module Dependabot
       end
 
       # rubocop:disable Metrics/PerceivedComplexity
-      def dependency_script_plugins(root_project_dir)
-        return [] unless buildfile(root_project_dir)
+      def dependency_script_plugins(root_dir)
+        return [] unless buildfile(root_dir)
 
         dependency_plugin_paths =
-          FileParser.find_include_names(buildfile(root_project_dir)).
+          FileParser.find_include_names(buildfile(root_dir)).
           reject { |path| path.include?("://") }.
           reject { |path| !path.include?("/") && path.split(".").count > 2 }.
           select { |filename| filename.include?("dependencies") }.
