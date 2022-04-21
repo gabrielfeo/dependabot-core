@@ -81,22 +81,25 @@ RSpec.describe Dependabot::Gradle::FileFetcher do
 
       context "with included build" do
         before do
-          stub_content_request("?ref=sha", "composite/contents_java_with_settings.json")
-          stub_content_request("settings.gradle?ref=sha", "composite/contents_java_settings.json")
-          stub_content_request("app/build.gradle?ref=sha", "contents_java_basic_buildfile.json")
-          stub_content_request("included?ref=sha", "contents_java_with_settings.json")
-          stub_content_request("included/settings.gradle?ref=sha", "contents_java_simple_settings.json")
-          stub_content_request("included/build.gradle?ref=sha", "contents_java_basic_buildfile.json")
-          stub_content_request("included/app/build.gradle?ref=sha", "contents_java_basic_buildfile.json")
+          stub_content_request("?ref=sha", "composite/single/root_dir.json")
+          stub_content_request("settings.gradle?ref=sha", "composite/single/root_settings_file.json")
+          stub_content_request("build.gradle?ref=sha", "composite/single/root_build_file.json")
+          stub_content_request("app/build.gradle?ref=sha", "composite/single/app_build_file.json")
+          stub_content_request("included?ref=sha", "composite/single/included_dir.json")
+          stub_content_request("included/settings.gradle?ref=sha", "composite/single/included_settings_file.json")
+          stub_content_request("included/build.gradle?ref=sha", "composite/single/included_build_file.json")
+          stub_content_request("included/app/build.gradle?ref=sha", "composite/single/included_app_build_file.json")
         end
 
         it "fetches all buildfiles" do
-          expect(file_fetcher_instance.files.count).to eq(5)
+          expect(file_fetcher_instance.files.count).to eq(6)
           expect(file_fetcher_instance.files.map(&:name)).
             to match_array(%w(
-              build.gradle settings.gradle
+              build.gradle
+              settings.gradle
               app/build.gradle
-              included/build.gradle included/settings.gradle
+              included/build.gradle
+              included/settings.gradle
               included/app/build.gradle
             ))
         end
