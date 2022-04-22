@@ -84,9 +84,8 @@ RSpec.describe Dependabot::Gradle::FileFetcher do
 
         context "when only one" do
           before do
-            root_dir = "composite_build_examples/single_include"
             stub_content_request("?ref=sha", "contents_java_with_settings.json")
-            stub_content_request("settings.gradle?ref=sha", "#{root_dir}/settings_file.json")
+            stub_content_request("settings.gradle?ref=sha", "contents_java_settings_1_included_build.json")
             stub_content_request("build.gradle?ref=sha", "contents_java_basic_buildfile.json")
             stub_content_request("app/build.gradle?ref=sha", "contents_java_basic_buildfile.json")
             stub_content_request("included?ref=sha", "contents_java_with_settings.json")
@@ -111,9 +110,8 @@ RSpec.describe Dependabot::Gradle::FileFetcher do
 
         context "when multiple" do
           before do
-            root_dir = "composite_build_examples/multiple_includes"
             stub_content_request("?ref=sha", "contents_java_with_settings.json")
-            stub_content_request("settings.gradle?ref=sha", "#{root_dir}/settings_file.json")
+            stub_content_request("settings.gradle?ref=sha", "contents_java_settings_2_included_builds.json")
             stub_content_request("build.gradle?ref=sha", "contents_java_basic_buildfile.json")
             stub_content_request("app/build.gradle?ref=sha", "contents_java_basic_buildfile.json")
             stub_content_request("included?ref=sha", "contents_java_with_settings.json")
