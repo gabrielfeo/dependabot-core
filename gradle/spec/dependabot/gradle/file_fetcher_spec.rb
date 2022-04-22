@@ -82,7 +82,7 @@ RSpec.describe Dependabot::Gradle::FileFetcher do
 
       context "with included build" do
         before do
-          root_dir = "composite/single"
+          root_dir = "composite_build_examples/single_include"
           stub_content_request("?ref=sha", "#{root_dir}/dir.json")
           stub_content_request("settings.gradle?ref=sha", "#{root_dir}/settings_file.json")
           stub_content_request("build.gradle?ref=sha", "#{root_dir}/build_file.json")
@@ -108,7 +108,7 @@ RSpec.describe Dependabot::Gradle::FileFetcher do
 
         context "and nested included build" do
           before do
-            root_dir = "composite/multiple_nested"
+            root_dir = "composite_build_examples/nested_includes"
             stub_content_request("?ref=sha", "#{root_dir}/dir.json")
             stub_content_request("settings.gradle?ref=sha", "#{root_dir}/settings_file.json")
             stub_content_request("build.gradle?ref=sha", "#{root_dir}/build_file.json")
