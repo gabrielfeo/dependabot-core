@@ -112,7 +112,9 @@ module Dependabot
 
       def buildfile(dir)
         file = first_present_file(dir, SUPPORTED_BUILD_FILE_NAMES)
-        @buildfile_name ||= File.basename(file.name)
+        if file
+          @buildfile_name ||= File.basename(file.name)
+        end
         file
       end
 
