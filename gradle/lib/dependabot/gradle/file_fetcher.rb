@@ -41,9 +41,16 @@ module Dependabot
       end
 
       def included_builds(root_dir)
-        return [] unless settings_file(root_dir)
+        builds = []
 
-        SettingsFileParser.
+        # buildSrc is implicit: included but not declared in settings.gradle
+        buildsrc = repo_contents(dir: root_dir, raise_errors: false).
+          find { |item| item.type == 'dir' && item.name == 'buildSrc' }
+        builds << File.join(root_dir, "buildSrc") if buildsrc
+
+        return builds unless settings_file(root_dir)
+
+        builds += SettingsFileParser.
           new(settings_file: settings_file(root_dir)).
           included_build_paths.
           map { |p| File.join(root_dir, p) }
