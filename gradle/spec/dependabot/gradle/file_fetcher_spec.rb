@@ -82,17 +82,40 @@ RSpec.describe Dependabot::Gradle::FileFetcher do
 
     context "with included builds" do
 
-      context "when implicit (buildSrc)" do
+      context "when has buildSrc" do
         before do
-          stub_content_request("?ref=sha", "contents_java_with_buildsrc.json")
-          stub_content_request("build.gradle?ref=sha", "contents_java_basic_buildfile.json")
           stub_content_request("buildSrc?ref=sha", "contents_java.json")
           stub_content_request("buildSrc/build.gradle?ref=sha", "contents_java_basic_buildfile.json")
         end
 
-        it "fetches all buildfiles" do
-          expect(file_fetcher_instance.files.map(&:name)).
-            to match_array(%w(build.gradle buildSrc/build.gradle))
+        context "implicitly included" do
+          before do
+            stub_content_request("?ref=sha", "contents_java_with_buildsrc.json")
+          end
+
+          it "fetches all buildfiles" do
+            expect(file_fetcher_instance.files.map(&:name)).
+              to match_array(%w(build.gradle buildSrc/build.gradle))
+          end
+        end
+
+        context "explicitly included" do
+          before do
+            stub_content_request("?ref=sha", "contents_java_with_buildsrc_and_settings.json")
+            stub_content_request("settings.gradle?ref=sha", "contents_java_settings_explicit_buildsrc.json")
+            stub_content_request("included?ref=sha", "contents_java.json")
+            stub_content_request("included/build.gradle?ref=sha", "contents_java_basic_buildfile.json")
+          end
+
+          it "doesn't fetch buildSrc buildfiles twice" do
+            expect(file_fetcher_instance.files.map(&:name)).
+              to match_array(%w(
+                build.gradle
+                settings.gradle
+                buildSrc/build.gradle
+                included/build.gradle
+              ))
+          end
         end
       end
 
