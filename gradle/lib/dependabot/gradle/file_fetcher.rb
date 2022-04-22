@@ -27,7 +27,6 @@ module Dependabot
       private
 
       def fetch_files
-        # byebug
         fetched_files = all_buildfiles_in_build(".")
         check_required_files_present(fetched_files)
         fetched_files
@@ -46,15 +45,10 @@ module Dependabot
       def included_builds(root_dir)
         return [] unless settings_file(root_dir)
 
-        direct_includes =
-          SettingsFileParser.
+        SettingsFileParser.
           new(settings_file: settings_file(root_dir)).
-          included_build_paths
-
-        nested_includes = direct_includes.flat_map do |dir|
-          included_builds(File.join(root_dir, dir))
-        end
-        direct_includes + nested_includes
+          included_build_paths.
+          map { |p| File.join(root_dir, p) }
       end
 
       # TODO Rename all_buildfiles

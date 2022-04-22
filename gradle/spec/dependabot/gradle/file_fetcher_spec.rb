@@ -2,7 +2,7 @@
 
 require "spec_helper"
 require "dependabot/gradle/file_fetcher"
-require 'byebug'
+require 'debug'
 require_common_spec "file_fetchers/shared_examples_for_file_fetchers"
 
 RSpec.describe Dependabot::Gradle::FileFetcher do
