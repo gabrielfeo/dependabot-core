@@ -6,7 +6,3 @@ gem "dependabot-common", path: "../common"
 gem "dependabot-maven", path: "../maven"
 
 gemspec
-
-
-
-gem "debug", "~> 1.5"
