@@ -2,6 +2,7 @@
 
 require "spec_helper"
 require "dependabot/gradle/file_fetcher"
+require 'byebug'
 require_common_spec "file_fetchers/shared_examples_for_file_fetchers"
 
 RSpec.describe Dependabot::Gradle::FileFetcher do
@@ -107,29 +108,32 @@ RSpec.describe Dependabot::Gradle::FileFetcher do
 
         context "and nested included build" do
           before do
-            stub_content_request("?ref=sha", "composite/contents_java_with_settings.json")
-            stub_content_request("settings.gradle?ref=sha", "composite/contents_java_settings.json")
-            stub_content_request("build.gradle?ref=sha", "contents_java_basic_buildfile.json")
-            stub_content_request("app/build.gradle?ref=sha", "contents_java_basic_buildfile.json")
-            stub_content_request("included?ref=sha", "composite/contents_java_with_settings.json")
-            stub_content_request("included/settings.gradle?ref=sha", "composite/contents_java_settings.json")
-            stub_content_request("included/build.gradle?ref=sha", "contents_java_basic_buildfile.json")
-            stub_content_request("included/app/build.gradle?ref=sha", "contents_java_basic_buildfile.json")
-            stub_content_request("included/nested?ref=sha", "contents_java_with_settings.json")
-            stub_content_request("included/nested/settings.gradle?ref=sha", "contents_java_simple_settings.json")
-            stub_content_request("included/nested/build.gradle?ref=sha", "contents_java_basic_buildfile.json")
-            stub_content_request("included/nested/app/build.gradle?ref=sha", "contents_java_basic_buildfile.json")
+            root_dir = "composite/multiple_nested"
+            stub_content_request("?ref=sha", "#{root_dir}/dir.json")
+            stub_content_request("settings.gradle?ref=sha", "#{root_dir}/settings_file.json")
+            stub_content_request("build.gradle?ref=sha", "#{root_dir}/build_file.json")
+            stub_content_request("app/build.gradle?ref=sha", "#{root_dir}/app/build_file.json")
+            stub_content_request("included?ref=sha", "#{root_dir}/included/dir.json")
+            stub_content_request("included/settings.gradle?ref=sha", "#{root_dir}/included/settings_file.json")
+            stub_content_request("included/build.gradle?ref=sha", "#{root_dir}/included/build_file.json")
+            stub_content_request("included/app/build.gradle?ref=sha", "#{root_dir}/included/app/build_file.json")
+            stub_content_request("included/nested?ref=sha", "#{root_dir}/included/nested/dir.json")
+            stub_content_request("included/nested/build.gradle?ref=sha", "#{root_dir}/included/nested/build_file.json")
+            stub_content_request("included/nested/settings.gradle?ref=sha", "#{root_dir}/included/nested/settings_file.json")
+            stub_content_request("included/nested/app/build.gradle?ref=sha", "#{root_dir}/included/nested/app/build_file.json")
           end
 
           it "fetches all buildfiles transitively" do
-            expect(file_fetcher_instance.files.count).to eq(5)
             expect(file_fetcher_instance.files.map(&:name)).
               to match_array(%w(
-                build.gradle settings.gradle
+                build.gradle
+                settings.gradle
                 app/build.gradle
-                included/build.gradle included/settings.gradle
+                included/build.gradle
+                included/settings.gradle
                 included/app/build.gradle
-                included/nested/build.gradle included/nested/settings.gradle
+                included/nested/build.gradle
+                included/nested/settings.gradle
                 included/nested/app/build.gradle
               ))
           end
