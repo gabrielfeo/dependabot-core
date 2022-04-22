@@ -85,11 +85,11 @@ RSpec.describe Dependabot::Gradle::FileFetcher do
         context "when only one" do
           before do
             root_dir = "composite_build_examples/single_include"
-            stub_content_request("?ref=sha", "#{root_dir}/dir.json")
+            stub_content_request("?ref=sha", "contents_java_with_settings.json")
             stub_content_request("settings.gradle?ref=sha", "#{root_dir}/settings_file.json")
             stub_content_request("build.gradle?ref=sha", "contents_java_basic_buildfile.json")
             stub_content_request("app/build.gradle?ref=sha", "contents_java_basic_buildfile.json")
-            stub_content_request("included?ref=sha", "#{root_dir}/dir.json")
+            stub_content_request("included?ref=sha", "contents_java_with_settings.json")
             stub_content_request("included/settings.gradle?ref=sha", "contents_java_simple_settings.json")
             stub_content_request("included/build.gradle?ref=sha", "contents_java_basic_buildfile.json")
             stub_content_request("included/app/build.gradle?ref=sha", "contents_java_basic_buildfile.json")
@@ -112,15 +112,15 @@ RSpec.describe Dependabot::Gradle::FileFetcher do
         context "when multiple" do
           before do
             root_dir = "composite_build_examples/multiple_includes"
-            stub_content_request("?ref=sha", "#{root_dir}/dir.json")
+            stub_content_request("?ref=sha", "contents_java_with_settings.json")
             stub_content_request("settings.gradle?ref=sha", "#{root_dir}/settings_file.json")
             stub_content_request("build.gradle?ref=sha", "contents_java_basic_buildfile.json")
             stub_content_request("app/build.gradle?ref=sha", "contents_java_basic_buildfile.json")
-            stub_content_request("included?ref=sha", "#{root_dir}/included/dir.json")
+            stub_content_request("included?ref=sha", "contents_java_with_settings.json")
             stub_content_request("included/settings.gradle?ref=sha", "contents_java_simple_settings.json")
             stub_content_request("included/build.gradle?ref=sha", "contents_java_basic_buildfile.json")
             stub_content_request("included/app/build.gradle?ref=sha", "contents_java_basic_buildfile.json")
-            stub_content_request("included2?ref=sha", "#{root_dir}/included2/dir.json")
+            stub_content_request("included2?ref=sha", "contents_java_with_settings.json")
             stub_content_request("included2/build.gradle?ref=sha", "contents_java_basic_buildfile.json")
             stub_content_request("included2/settings.gradle?ref=sha", "contents_java_simple_settings.json")
             stub_content_request("included2/app/build.gradle?ref=sha", "contents_java_basic_buildfile.json")
