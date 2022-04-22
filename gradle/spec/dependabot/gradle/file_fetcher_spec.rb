@@ -153,8 +153,12 @@ RSpec.describe Dependabot::Gradle::FileFetcher do
             stub_content_request("included/app/build.gradle?ref=sha", "contents_java_basic_buildfile.json")
             stub_content_request("included/included?ref=sha", "contents_java_with_settings.json")
             stub_content_request("included/included/build.gradle?ref=sha", "contents_java_basic_buildfile.json")
-            stub_content_request("included/included/settings.gradle?ref=sha", "contents_java_simple_settings.json")
+            stub_content_request("included/included/settings.gradle?ref=sha", "contents_java_settings_1_included_build.json")
             stub_content_request("included/included/app/build.gradle?ref=sha", "contents_java_basic_buildfile.json")
+            stub_content_request("included/included/included?ref=sha", "contents_java_with_settings.json")
+            stub_content_request("included/included/included/build.gradle?ref=sha", "contents_java_basic_buildfile.json")
+            stub_content_request("included/included/included/settings.gradle?ref=sha", "contents_java_simple_settings.json")
+            stub_content_request("included/included/included/app/build.gradle?ref=sha", "contents_java_basic_buildfile.json")
           end
 
           it "fetches all buildfiles transitively" do
@@ -169,6 +173,9 @@ RSpec.describe Dependabot::Gradle::FileFetcher do
                 included/included/build.gradle
                 included/included/settings.gradle
                 included/included/app/build.gradle
+                included/included/included/build.gradle
+                included/included/included/settings.gradle
+                included/included/included/app/build.gradle
               ))
           end
         end
