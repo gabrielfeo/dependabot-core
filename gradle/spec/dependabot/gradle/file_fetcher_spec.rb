@@ -87,12 +87,12 @@ RSpec.describe Dependabot::Gradle::FileFetcher do
             root_dir = "composite_build_examples/single_include"
             stub_content_request("?ref=sha", "#{root_dir}/dir.json")
             stub_content_request("settings.gradle?ref=sha", "#{root_dir}/settings_file.json")
-            stub_content_request("build.gradle?ref=sha", "#{root_dir}/build_file.json")
-            stub_content_request("app/build.gradle?ref=sha", "#{root_dir}/app/build_file.json")
-            stub_content_request("included?ref=sha", "#{root_dir}/included/dir.json")
-            stub_content_request("included/settings.gradle?ref=sha", "#{root_dir}/included/settings_file.json")
-            stub_content_request("included/build.gradle?ref=sha", "#{root_dir}/included/build_file.json")
-            stub_content_request("included/app/build.gradle?ref=sha", "#{root_dir}/included/app/build_file.json")
+            stub_content_request("build.gradle?ref=sha", "contents_java_basic_buildfile.json")
+            stub_content_request("app/build.gradle?ref=sha", "contents_java_basic_buildfile.json")
+            stub_content_request("included?ref=sha", "#{root_dir}/dir.json")
+            stub_content_request("included/settings.gradle?ref=sha", "contents_java_simple_settings.json")
+            stub_content_request("included/build.gradle?ref=sha", "contents_java_basic_buildfile.json")
+            stub_content_request("included/app/build.gradle?ref=sha", "contents_java_basic_buildfile.json")
           end
 
           it "fetches all buildfiles" do
