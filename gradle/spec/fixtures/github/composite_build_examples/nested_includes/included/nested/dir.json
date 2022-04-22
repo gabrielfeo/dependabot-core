@@ -17,7 +17,7 @@
   },
   {
     "name": "app",
-    "path": "app",
+    "path": "included/nested/app",
     "sha": "5df7f650b80fef281199e7d1c6bf53c6a5280802",
     "size": 0,
     "url": "https://api.github.com/repos/dependabot-fixtures/gradle-with-settings/contents/dependencies?ref=main",

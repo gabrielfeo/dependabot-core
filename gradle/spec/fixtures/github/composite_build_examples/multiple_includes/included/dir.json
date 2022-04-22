@@ -48,22 +48,6 @@
     }
   },
   {
-    "name": "nested",
-    "path": "included/nested",
-    "sha": "5df7f650b80fef281199e7d1c6bf53c6a5280802",
-    "size": 0,
-    "url": "https://api.github.com/repos/dependabot-fixtures/gradle-with-settings/contents/dependencies?ref=main",
-    "html_url": "https://github.com/dependabot-fixtures/gradle-with-settings/tree/main/dependencies",
-    "git_url": "https://api.github.com/repos/dependabot-fixtures/gradle-with-settings/git/trees/5df7f650b80fef281199e7d1c6bf53c6a5280802",
-    "download_url": null,
-    "type": "dir",
-    "_links": {
-      "self": "https://api.github.com/repos/dependabot-fixtures/gradle-with-settings/contents/dependencies?ref=main",
-      "git": "https://api.github.com/repos/dependabot-fixtures/gradle-with-settings/git/trees/5df7f650b80fef281199e7d1c6bf53c6a5280802",
-      "html": "https://github.com/dependabot-fixtures/gradle-with-settings/tree/main/dependencies"
-    }
-  },
-  {
     "name": "pom.xml",
     "path": "included/pom.xml",
     "sha": "9a0a1f4bb5db4083b7f4ba9d8fee33675de8dc62",

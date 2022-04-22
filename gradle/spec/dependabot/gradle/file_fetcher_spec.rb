@@ -80,33 +80,69 @@ RSpec.describe Dependabot::Gradle::FileFetcher do
         end
       end
 
-      context "with included build" do
-        before do
-          root_dir = "composite_build_examples/single_include"
-          stub_content_request("?ref=sha", "#{root_dir}/dir.json")
-          stub_content_request("settings.gradle?ref=sha", "#{root_dir}/settings_file.json")
-          stub_content_request("build.gradle?ref=sha", "#{root_dir}/build_file.json")
-          stub_content_request("app/build.gradle?ref=sha", "#{root_dir}/app/build_file.json")
-          stub_content_request("included?ref=sha", "#{root_dir}/included/dir.json")
-          stub_content_request("included/settings.gradle?ref=sha", "#{root_dir}/included/settings_file.json")
-          stub_content_request("included/build.gradle?ref=sha", "#{root_dir}/included/build_file.json")
-          stub_content_request("included/app/build.gradle?ref=sha", "#{root_dir}/included/app/build_file.json")
+      context "with included builds" do
+
+        context "when only one" do
+          before do
+            root_dir = "composite_build_examples/single_include"
+            stub_content_request("?ref=sha", "#{root_dir}/dir.json")
+            stub_content_request("settings.gradle?ref=sha", "#{root_dir}/settings_file.json")
+            stub_content_request("build.gradle?ref=sha", "#{root_dir}/build_file.json")
+            stub_content_request("app/build.gradle?ref=sha", "#{root_dir}/app/build_file.json")
+            stub_content_request("included?ref=sha", "#{root_dir}/included/dir.json")
+            stub_content_request("included/settings.gradle?ref=sha", "#{root_dir}/included/settings_file.json")
+            stub_content_request("included/build.gradle?ref=sha", "#{root_dir}/included/build_file.json")
+            stub_content_request("included/app/build.gradle?ref=sha", "#{root_dir}/included/app/build_file.json")
+          end
+
+          it "fetches all buildfiles" do
+            expect(file_fetcher_instance.files.count).to eq(6)
+            expect(file_fetcher_instance.files.map(&:name)).
+              to match_array(%w(
+                build.gradle
+                settings.gradle
+                app/build.gradle
+                included/build.gradle
+                included/settings.gradle
+                included/app/build.gradle
+              ))
+          end
         end
 
-        it "fetches all buildfiles" do
-          expect(file_fetcher_instance.files.count).to eq(6)
-          expect(file_fetcher_instance.files.map(&:name)).
-            to match_array(%w(
-              build.gradle
-              settings.gradle
-              app/build.gradle
-              included/build.gradle
-              included/settings.gradle
-              included/app/build.gradle
-            ))
+        context "when multiple" do
+          before do
+            root_dir = "composite_build_examples/multiple_includes"
+            stub_content_request("?ref=sha", "#{root_dir}/dir.json")
+            stub_content_request("settings.gradle?ref=sha", "#{root_dir}/settings_file.json")
+            stub_content_request("build.gradle?ref=sha", "#{root_dir}/build_file.json")
+            stub_content_request("app/build.gradle?ref=sha", "#{root_dir}/app/build_file.json")
+            stub_content_request("included?ref=sha", "#{root_dir}/included/dir.json")
+            stub_content_request("included/settings.gradle?ref=sha", "#{root_dir}/included/settings_file.json")
+            stub_content_request("included/build.gradle?ref=sha", "#{root_dir}/included/build_file.json")
+            stub_content_request("included/app/build.gradle?ref=sha", "#{root_dir}/included/app/build_file.json")
+            stub_content_request("included2?ref=sha", "#{root_dir}/included2/dir.json")
+            stub_content_request("included2/build.gradle?ref=sha", "#{root_dir}/included2/build_file.json")
+            stub_content_request("included2/settings.gradle?ref=sha", "#{root_dir}/included2/settings_file.json")
+            stub_content_request("included2/app/build.gradle?ref=sha", "#{root_dir}/included2/app/build_file.json")
+          end
+
+          it "fetches all buildfiles" do
+            expect(file_fetcher_instance.files.map(&:name)).
+              to match_array(%w(
+                build.gradle
+                settings.gradle
+                app/build.gradle
+                included/build.gradle
+                included/settings.gradle
+                included/app/build.gradle
+                included2/build.gradle
+                included2/settings.gradle
+                included2/app/build.gradle
+              ))
+          end
         end
 
-        context "and nested included build" do
+        context "when nested included builds" do
           before do
             root_dir = "composite_build_examples/nested_includes"
             stub_content_request("?ref=sha", "#{root_dir}/dir.json")
