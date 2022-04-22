@@ -60,7 +60,7 @@ module Dependabot
           new(settings_file: settings_file(root_dir)).
           subproject_paths
 
-        f = subproject_paths.map do |path|
+        subproject_paths.map do |path|
           if @buildfile_name
             fetch_file_from_host(File.join(root_dir, path, @buildfile_name))
           else
